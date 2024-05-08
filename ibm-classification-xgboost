@@ -1,0 +1,1402 @@
+{
+ "cells": [
+  {
+   "cell_type": "markdown",
+   "id": "7804ecee",
+   "metadata": {
+    "papermill": {
+     "duration": 0.005666,
+     "end_time": "2024-05-08T10:50:52.705140",
+     "exception": false,
+     "start_time": "2024-05-08T10:50:52.699474",
+     "status": "completed"
+    },
+    "tags": []
+   },
+   "source": [
+    "# Imports"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 1,
+   "id": "11b01298",
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2024-05-08T10:50:52.716984Z",
+     "iopub.status.busy": "2024-05-08T10:50:52.716610Z",
+     "iopub.status.idle": "2024-05-08T10:50:53.650909Z",
+     "shell.execute_reply": "2024-05-08T10:50:53.649970Z"
+    },
+    "papermill": {
+     "duration": 0.94327,
+     "end_time": "2024-05-08T10:50:53.653478",
+     "exception": false,
+     "start_time": "2024-05-08T10:50:52.710208",
+     "status": "completed"
+    },
+    "tags": []
+   },
+   "outputs": [],
+   "source": [
+    "import pandas as pd"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "79e1a2bb",
+   "metadata": {
+    "papermill": {
+     "duration": 0.005781,
+     "end_time": "2024-05-08T10:50:53.664915",
+     "exception": false,
+     "start_time": "2024-05-08T10:50:53.659134",
+     "status": "completed"
+    },
+    "tags": []
+   },
+   "source": [
+    "# Read Data"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 2,
+   "id": "77997240",
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2024-05-08T10:50:53.676822Z",
+     "iopub.status.busy": "2024-05-08T10:50:53.676328Z",
+     "iopub.status.idle": "2024-05-08T10:51:27.378125Z",
+     "shell.execute_reply": "2024-05-08T10:51:27.377310Z"
+    },
+    "papermill": {
+     "duration": 33.710425,
+     "end_time": "2024-05-08T10:51:27.380480",
+     "exception": false,
+     "start_time": "2024-05-08T10:50:53.670055",
+     "status": "completed"
+    },
+    "tags": []
+   },
+   "outputs": [],
+   "source": [
+    "X_train = pd.read_csv(\"/kaggle/input/ibm-classification-feature-selection/X_train_normalized.csv\", index_col=[0])\n",
+    "X_test = pd.read_csv(\"/kaggle/input/ibm-classification-feature-selection/X_test_normalized.csv\", index_col=[0])\n",
+    "y_train = pd.read_csv(\"/kaggle/input/ibm-classification-feature-selection/y_train.csv\", index_col=[0])\n",
+    "y_test = pd.read_csv(\"/kaggle/input/ibm-classification-feature-selection/y_test.csv\", index_col=[0]).reset_index(drop=True)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 3,
+   "id": "b49d5fe0",
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2024-05-08T10:51:27.392291Z",
+     "iopub.status.busy": "2024-05-08T10:51:27.391955Z",
+     "iopub.status.idle": "2024-05-08T10:51:27.419074Z",
+     "shell.execute_reply": "2024-05-08T10:51:27.418024Z"
+    },
+    "papermill": {
+     "duration": 0.035836,
+     "end_time": "2024-05-08T10:51:27.421620",
+     "exception": false,
+     "start_time": "2024-05-08T10:51:27.385784",
+     "status": "completed"
+    },
+    "tags": []
+   },
+   "outputs": [
+    {
+     "data": {
+      "text/html": [
+       "<div>\n",
+       "<style scoped>\n",
+       "    .dataframe tbody tr th:only-of-type {\n",
+       "        vertical-align: middle;\n",
+       "    }\n",
+       "\n",
+       "    .dataframe tbody tr th {\n",
+       "        vertical-align: top;\n",
+       "    }\n",
+       "\n",
+       "    .dataframe thead th {\n",
+       "        text-align: right;\n",
+       "    }\n",
+       "</style>\n",
+       "<table border=\"1\" class=\"dataframe\">\n",
+       "  <thead>\n",
+       "    <tr style=\"text-align: right;\">\n",
+       "      <th></th>\n",
+       "      <th>Symbol</th>\n",
+       "      <th>Adj Close</th>\n",
+       "      <th>Volume</th>\n",
+       "      <th>S&amp;P500</th>\n",
+       "      <th>Unemployment Rate (%)</th>\n",
+       "      <th>Monthly Average Mortgage Rate (%)</th>\n",
+       "      <th>Corporate Bond Yield</th>\n",
+       "      <th>Quarterly GDP Growth Rate (%)</th>\n",
+       "      <th>Home Price Index</th>\n",
+       "      <th>Sector_Basic Materials</th>\n",
+       "      <th>...</th>\n",
+       "      <th>Adj Close 7-Day std</th>\n",
+       "      <th>Volume 7-Day std</th>\n",
+       "      <th>Distance to Adj Close 7-Day Upper Bollinger Band</th>\n",
+       "      <th>Distance to Adj Close 7-Day Lower Bollinger Band</th>\n",
+       "      <th>True Range</th>\n",
+       "      <th>MACD</th>\n",
+       "      <th>MACD Histogram</th>\n",
+       "      <th>MACD-V</th>\n",
+       "      <th>MACD-V Histogram</th>\n",
+       "      <th>Stochastic Oscillator %K</th>\n",
+       "    </tr>\n",
+       "  </thead>\n",
+       "  <tbody>\n",
+       "    <tr>\n",
+       "      <th>0</th>\n",
+       "      <td>1.286535</td>\n",
+       "      <td>-0.383355</td>\n",
+       "      <td>0.497834</td>\n",
+       "      <td>-1.239088</td>\n",
+       "      <td>0.560375</td>\n",
+       "      <td>0.584924</td>\n",
+       "      <td>1.117521</td>\n",
+       "      <td>0.307606</td>\n",
+       "      <td>-1.256557</td>\n",
+       "      <td>-0.211114</td>\n",
+       "      <td>...</td>\n",
+       "      <td>-0.298140</td>\n",
+       "      <td>0.117466</td>\n",
+       "      <td>0.236149</td>\n",
+       "      <td>-0.269833</td>\n",
+       "      <td>-0.179460</td>\n",
+       "      <td>0.072447</td>\n",
+       "      <td>0.039464</td>\n",
+       "      <td>0.014854</td>\n",
+       "      <td>0.039632</td>\n",
+       "      <td>0.703087</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>1</th>\n",
+       "      <td>0.761917</td>\n",
+       "      <td>-0.302460</td>\n",
+       "      <td>-0.255973</td>\n",
+       "      <td>-1.239088</td>\n",
+       "      <td>0.560375</td>\n",
+       "      <td>0.584924</td>\n",
+       "      <td>1.117521</td>\n",
+       "      <td>0.307606</td>\n",
+       "      <td>-1.256557</td>\n",
+       "      <td>-0.211114</td>\n",
+       "      <td>...</td>\n",
+       "      <td>-0.233517</td>\n",
+       "      <td>-0.211044</td>\n",
+       "      <td>0.243391</td>\n",
+       "      <td>-0.149424</td>\n",
+       "      <td>0.885117</td>\n",
+       "      <td>0.151975</td>\n",
+       "      <td>0.161407</td>\n",
+       "      <td>-0.052661</td>\n",
+       "      <td>0.081329</td>\n",
+       "      <td>1.417437</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>2</th>\n",
+       "      <td>0.407246</td>\n",
+       "      <td>-0.278162</td>\n",
+       "      <td>-0.224129</td>\n",
+       "      <td>-1.239088</td>\n",
+       "      <td>0.560375</td>\n",
+       "      <td>0.584924</td>\n",
+       "      <td>1.117521</td>\n",
+       "      <td>0.307606</td>\n",
+       "      <td>-1.256557</td>\n",
+       "      <td>-0.211114</td>\n",
+       "      <td>...</td>\n",
+       "      <td>-0.351999</td>\n",
+       "      <td>-0.236571</td>\n",
+       "      <td>0.252801</td>\n",
+       "      <td>-0.346142</td>\n",
+       "      <td>-0.162364</td>\n",
+       "      <td>0.013708</td>\n",
+       "      <td>-0.023140</td>\n",
+       "      <td>-0.053078</td>\n",
+       "      <td>-0.030982</td>\n",
+       "      <td>0.567310</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>3</th>\n",
+       "      <td>-1.181385</td>\n",
+       "      <td>-0.466305</td>\n",
+       "      <td>-0.074461</td>\n",
+       "      <td>-1.239088</td>\n",
+       "      <td>0.560375</td>\n",
+       "      <td>0.584924</td>\n",
+       "      <td>1.117521</td>\n",
+       "      <td>0.307606</td>\n",
+       "      <td>-1.256557</td>\n",
+       "      <td>4.736778</td>\n",
+       "      <td>...</td>\n",
+       "      <td>-0.314629</td>\n",
+       "      <td>0.840247</td>\n",
+       "      <td>0.234477</td>\n",
+       "      <td>-0.300371</td>\n",
+       "      <td>-0.561522</td>\n",
+       "      <td>0.112365</td>\n",
+       "      <td>0.184630</td>\n",
+       "      <td>0.335596</td>\n",
+       "      <td>0.463963</td>\n",
+       "      <td>1.074077</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>4</th>\n",
+       "      <td>-1.063162</td>\n",
+       "      <td>-0.245769</td>\n",
+       "      <td>0.243767</td>\n",
+       "      <td>-1.239088</td>\n",
+       "      <td>0.560375</td>\n",
+       "      <td>0.584924</td>\n",
+       "      <td>1.117521</td>\n",
+       "      <td>0.307606</td>\n",
+       "      <td>-1.256557</td>\n",
+       "      <td>-0.211114</td>\n",
+       "      <td>...</td>\n",
+       "      <td>-0.167583</td>\n",
+       "      <td>0.314758</td>\n",
+       "      <td>0.004186</td>\n",
+       "      <td>-0.287913</td>\n",
+       "      <td>0.373985</td>\n",
+       "      <td>-0.345611</td>\n",
+       "      <td>-0.232172</td>\n",
+       "      <td>-0.343499</td>\n",
+       "      <td>-0.162136</td>\n",
+       "      <td>-1.813621</td>\n",
+       "    </tr>\n",
+       "  </tbody>\n",
+       "</table>\n",
+       "<p>5 rows × 120 columns</p>\n",
+       "</div>"
+      ],
+      "text/plain": [
+       "     Symbol  Adj Close    Volume    S&P500  Unemployment Rate (%)  \\\n",
+       "0  1.286535  -0.383355  0.497834 -1.239088               0.560375   \n",
+       "1  0.761917  -0.302460 -0.255973 -1.239088               0.560375   \n",
+       "2  0.407246  -0.278162 -0.224129 -1.239088               0.560375   \n",
+       "3 -1.181385  -0.466305 -0.074461 -1.239088               0.560375   \n",
+       "4 -1.063162  -0.245769  0.243767 -1.239088               0.560375   \n",
+       "\n",
+       "   Monthly Average Mortgage Rate (%)  Corporate Bond Yield  \\\n",
+       "0                           0.584924              1.117521   \n",
+       "1                           0.584924              1.117521   \n",
+       "2                           0.584924              1.117521   \n",
+       "3                           0.584924              1.117521   \n",
+       "4                           0.584924              1.117521   \n",
+       "\n",
+       "   Quarterly GDP Growth Rate (%)  Home Price Index  Sector_Basic Materials  \\\n",
+       "0                       0.307606         -1.256557               -0.211114   \n",
+       "1                       0.307606         -1.256557               -0.211114   \n",
+       "2                       0.307606         -1.256557               -0.211114   \n",
+       "3                       0.307606         -1.256557                4.736778   \n",
+       "4                       0.307606         -1.256557               -0.211114   \n",
+       "\n",
+       "   ...  Adj Close 7-Day std  Volume 7-Day std  \\\n",
+       "0  ...            -0.298140          0.117466   \n",
+       "1  ...            -0.233517         -0.211044   \n",
+       "2  ...            -0.351999         -0.236571   \n",
+       "3  ...            -0.314629          0.840247   \n",
+       "4  ...            -0.167583          0.314758   \n",
+       "\n",
+       "   Distance to Adj Close 7-Day Upper Bollinger Band  \\\n",
+       "0                                          0.236149   \n",
+       "1                                          0.243391   \n",
+       "2                                          0.252801   \n",
+       "3                                          0.234477   \n",
+       "4                                          0.004186   \n",
+       "\n",
+       "   Distance to Adj Close 7-Day Lower Bollinger Band  True Range      MACD  \\\n",
+       "0                                         -0.269833   -0.179460  0.072447   \n",
+       "1                                         -0.149424    0.885117  0.151975   \n",
+       "2                                         -0.346142   -0.162364  0.013708   \n",
+       "3                                         -0.300371   -0.561522  0.112365   \n",
+       "4                                         -0.287913    0.373985 -0.345611   \n",
+       "\n",
+       "   MACD Histogram    MACD-V  MACD-V Histogram  Stochastic Oscillator %K  \n",
+       "0        0.039464  0.014854          0.039632                  0.703087  \n",
+       "1        0.161407 -0.052661          0.081329                  1.417437  \n",
+       "2       -0.023140 -0.053078         -0.030982                  0.567310  \n",
+       "3        0.184630  0.335596          0.463963                  1.074077  \n",
+       "4       -0.232172 -0.343499         -0.162136                 -1.813621  \n",
+       "\n",
+       "[5 rows x 120 columns]"
+      ]
+     },
+     "execution_count": 3,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "X_train.head(5)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 4,
+   "id": "3332099b",
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2024-05-08T10:51:27.434659Z",
+     "iopub.status.busy": "2024-05-08T10:51:27.434335Z",
+     "iopub.status.idle": "2024-05-08T10:51:27.456463Z",
+     "shell.execute_reply": "2024-05-08T10:51:27.455443Z"
+    },
+    "papermill": {
+     "duration": 0.031628,
+     "end_time": "2024-05-08T10:51:27.459047",
+     "exception": false,
+     "start_time": "2024-05-08T10:51:27.427419",
+     "status": "completed"
+    },
+    "tags": []
+   },
+   "outputs": [
+    {
+     "data": {
+      "text/html": [
+       "<div>\n",
+       "<style scoped>\n",
+       "    .dataframe tbody tr th:only-of-type {\n",
+       "        vertical-align: middle;\n",
+       "    }\n",
+       "\n",
+       "    .dataframe tbody tr th {\n",
+       "        vertical-align: top;\n",
+       "    }\n",
+       "\n",
+       "    .dataframe thead th {\n",
+       "        text-align: right;\n",
+       "    }\n",
+       "</style>\n",
+       "<table border=\"1\" class=\"dataframe\">\n",
+       "  <thead>\n",
+       "    <tr style=\"text-align: right;\">\n",
+       "      <th></th>\n",
+       "      <th>Symbol</th>\n",
+       "      <th>Adj Close</th>\n",
+       "      <th>Volume</th>\n",
+       "      <th>S&amp;P500</th>\n",
+       "      <th>Unemployment Rate (%)</th>\n",
+       "      <th>Monthly Average Mortgage Rate (%)</th>\n",
+       "      <th>Corporate Bond Yield</th>\n",
+       "      <th>Quarterly GDP Growth Rate (%)</th>\n",
+       "      <th>Home Price Index</th>\n",
+       "      <th>Sector_Basic Materials</th>\n",
+       "      <th>...</th>\n",
+       "      <th>Adj Close 7-Day std</th>\n",
+       "      <th>Volume 7-Day std</th>\n",
+       "      <th>Distance to Adj Close 7-Day Upper Bollinger Band</th>\n",
+       "      <th>Distance to Adj Close 7-Day Lower Bollinger Band</th>\n",
+       "      <th>True Range</th>\n",
+       "      <th>MACD</th>\n",
+       "      <th>MACD Histogram</th>\n",
+       "      <th>MACD-V</th>\n",
+       "      <th>MACD-V Histogram</th>\n",
+       "      <th>Stochastic Oscillator %K</th>\n",
+       "    </tr>\n",
+       "  </thead>\n",
+       "  <tbody>\n",
+       "    <tr>\n",
+       "      <th>0</th>\n",
+       "      <td>-0.206039</td>\n",
+       "      <td>1.354258</td>\n",
+       "      <td>-0.239400</td>\n",
+       "      <td>2.512348</td>\n",
+       "      <td>0.660965</td>\n",
+       "      <td>-2.39954</td>\n",
+       "      <td>-1.980584</td>\n",
+       "      <td>0.463318</td>\n",
+       "      <td>-1.894531</td>\n",
+       "      <td>-0.211114</td>\n",
+       "      <td>...</td>\n",
+       "      <td>0.407697</td>\n",
+       "      <td>-0.253133</td>\n",
+       "      <td>-1.046621</td>\n",
+       "      <td>-0.397982</td>\n",
+       "      <td>1.822855</td>\n",
+       "      <td>-1.005420</td>\n",
+       "      <td>-0.094047</td>\n",
+       "      <td>-0.448102</td>\n",
+       "      <td>-0.054776</td>\n",
+       "      <td>-1.373692</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>1</th>\n",
+       "      <td>1.486038</td>\n",
+       "      <td>0.647982</td>\n",
+       "      <td>-0.252503</td>\n",
+       "      <td>2.512348</td>\n",
+       "      <td>0.660965</td>\n",
+       "      <td>-2.39954</td>\n",
+       "      <td>-1.980584</td>\n",
+       "      <td>0.463318</td>\n",
+       "      <td>-1.894531</td>\n",
+       "      <td>-0.211114</td>\n",
+       "      <td>...</td>\n",
+       "      <td>0.175892</td>\n",
+       "      <td>-0.254727</td>\n",
+       "      <td>-0.482394</td>\n",
+       "      <td>-0.204397</td>\n",
+       "      <td>-0.192842</td>\n",
+       "      <td>0.110104</td>\n",
+       "      <td>-0.359390</td>\n",
+       "      <td>0.080089</td>\n",
+       "      <td>-0.458811</td>\n",
+       "      <td>-0.991576</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>2</th>\n",
+       "      <td>-0.693712</td>\n",
+       "      <td>-0.384946</td>\n",
+       "      <td>-0.124013</td>\n",
+       "      <td>2.512348</td>\n",
+       "      <td>0.660965</td>\n",
+       "      <td>-2.39954</td>\n",
+       "      <td>-1.980584</td>\n",
+       "      <td>0.463318</td>\n",
+       "      <td>-1.894531</td>\n",
+       "      <td>-0.211114</td>\n",
+       "      <td>...</td>\n",
+       "      <td>-0.296192</td>\n",
+       "      <td>-0.203749</td>\n",
+       "      <td>0.161051</td>\n",
+       "      <td>-0.346024</td>\n",
+       "      <td>-0.244519</td>\n",
+       "      <td>0.038039</td>\n",
+       "      <td>-0.407160</td>\n",
+       "      <td>-0.013546</td>\n",
+       "      <td>-0.541751</td>\n",
+       "      <td>-1.781038</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>3</th>\n",
+       "      <td>0.983587</td>\n",
+       "      <td>-0.011212</td>\n",
+       "      <td>-0.130146</td>\n",
+       "      <td>2.512348</td>\n",
+       "      <td>0.660965</td>\n",
+       "      <td>-2.39954</td>\n",
+       "      <td>-1.980584</td>\n",
+       "      <td>0.463318</td>\n",
+       "      <td>-1.894531</td>\n",
+       "      <td>-0.211114</td>\n",
+       "      <td>...</td>\n",
+       "      <td>-0.191586</td>\n",
+       "      <td>-0.178147</td>\n",
+       "      <td>0.173868</td>\n",
+       "      <td>-0.149957</td>\n",
+       "      <td>-0.289094</td>\n",
+       "      <td>0.592527</td>\n",
+       "      <td>-0.008127</td>\n",
+       "      <td>0.766414</td>\n",
+       "      <td>0.016781</td>\n",
+       "      <td>0.774399</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>4</th>\n",
+       "      <td>-1.203552</td>\n",
+       "      <td>0.695478</td>\n",
+       "      <td>-0.287889</td>\n",
+       "      <td>2.512348</td>\n",
+       "      <td>0.660965</td>\n",
+       "      <td>-2.39954</td>\n",
+       "      <td>-1.980584</td>\n",
+       "      <td>0.463318</td>\n",
+       "      <td>-1.894531</td>\n",
+       "      <td>-0.211114</td>\n",
+       "      <td>...</td>\n",
+       "      <td>-0.062149</td>\n",
+       "      <td>-0.281473</td>\n",
+       "      <td>-0.023190</td>\n",
+       "      <td>-0.132996</td>\n",
+       "      <td>0.022698</td>\n",
+       "      <td>0.972511</td>\n",
+       "      <td>-0.299918</td>\n",
+       "      <td>0.757151</td>\n",
+       "      <td>-0.223332</td>\n",
+       "      <td>0.644914</td>\n",
+       "    </tr>\n",
+       "  </tbody>\n",
+       "</table>\n",
+       "<p>5 rows × 120 columns</p>\n",
+       "</div>"
+      ],
+      "text/plain": [
+       "     Symbol  Adj Close    Volume    S&P500  Unemployment Rate (%)  \\\n",
+       "0 -0.206039   1.354258 -0.239400  2.512348               0.660965   \n",
+       "1  1.486038   0.647982 -0.252503  2.512348               0.660965   \n",
+       "2 -0.693712  -0.384946 -0.124013  2.512348               0.660965   \n",
+       "3  0.983587  -0.011212 -0.130146  2.512348               0.660965   \n",
+       "4 -1.203552   0.695478 -0.287889  2.512348               0.660965   \n",
+       "\n",
+       "   Monthly Average Mortgage Rate (%)  Corporate Bond Yield  \\\n",
+       "0                           -2.39954             -1.980584   \n",
+       "1                           -2.39954             -1.980584   \n",
+       "2                           -2.39954             -1.980584   \n",
+       "3                           -2.39954             -1.980584   \n",
+       "4                           -2.39954             -1.980584   \n",
+       "\n",
+       "   Quarterly GDP Growth Rate (%)  Home Price Index  Sector_Basic Materials  \\\n",
+       "0                       0.463318         -1.894531               -0.211114   \n",
+       "1                       0.463318         -1.894531               -0.211114   \n",
+       "2                       0.463318         -1.894531               -0.211114   \n",
+       "3                       0.463318         -1.894531               -0.211114   \n",
+       "4                       0.463318         -1.894531               -0.211114   \n",
+       "\n",
+       "   ...  Adj Close 7-Day std  Volume 7-Day std  \\\n",
+       "0  ...             0.407697         -0.253133   \n",
+       "1  ...             0.175892         -0.254727   \n",
+       "2  ...            -0.296192         -0.203749   \n",
+       "3  ...            -0.191586         -0.178147   \n",
+       "4  ...            -0.062149         -0.281473   \n",
+       "\n",
+       "   Distance to Adj Close 7-Day Upper Bollinger Band  \\\n",
+       "0                                         -1.046621   \n",
+       "1                                         -0.482394   \n",
+       "2                                          0.161051   \n",
+       "3                                          0.173868   \n",
+       "4                                         -0.023190   \n",
+       "\n",
+       "   Distance to Adj Close 7-Day Lower Bollinger Band  True Range      MACD  \\\n",
+       "0                                         -0.397982    1.822855 -1.005420   \n",
+       "1                                         -0.204397   -0.192842  0.110104   \n",
+       "2                                         -0.346024   -0.244519  0.038039   \n",
+       "3                                         -0.149957   -0.289094  0.592527   \n",
+       "4                                         -0.132996    0.022698  0.972511   \n",
+       "\n",
+       "   MACD Histogram    MACD-V  MACD-V Histogram  Stochastic Oscillator %K  \n",
+       "0       -0.094047 -0.448102         -0.054776                 -1.373692  \n",
+       "1       -0.359390  0.080089         -0.458811                 -0.991576  \n",
+       "2       -0.407160 -0.013546         -0.541751                 -1.781038  \n",
+       "3       -0.008127  0.766414          0.016781                  0.774399  \n",
+       "4       -0.299918  0.757151         -0.223332                  0.644914  \n",
+       "\n",
+       "[5 rows x 120 columns]"
+      ]
+     },
+     "execution_count": 4,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "X_test.head(5)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 5,
+   "id": "8c3f3e9b",
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2024-05-08T10:51:27.472486Z",
+     "iopub.status.busy": "2024-05-08T10:51:27.472143Z",
+     "iopub.status.idle": "2024-05-08T10:51:27.481651Z",
+     "shell.execute_reply": "2024-05-08T10:51:27.480644Z"
+    },
+    "papermill": {
+     "duration": 0.018463,
+     "end_time": "2024-05-08T10:51:27.483619",
+     "exception": false,
+     "start_time": "2024-05-08T10:51:27.465156",
+     "status": "completed"
+    },
+    "tags": []
+   },
+   "outputs": [
+    {
+     "data": {
+      "text/html": [
+       "<div>\n",
+       "<style scoped>\n",
+       "    .dataframe tbody tr th:only-of-type {\n",
+       "        vertical-align: middle;\n",
+       "    }\n",
+       "\n",
+       "    .dataframe tbody tr th {\n",
+       "        vertical-align: top;\n",
+       "    }\n",
+       "\n",
+       "    .dataframe thead th {\n",
+       "        text-align: right;\n",
+       "    }\n",
+       "</style>\n",
+       "<table border=\"1\" class=\"dataframe\">\n",
+       "  <thead>\n",
+       "    <tr style=\"text-align: right;\">\n",
+       "      <th></th>\n",
+       "      <th>2-week Forward Excess Return Sign</th>\n",
+       "    </tr>\n",
+       "  </thead>\n",
+       "  <tbody>\n",
+       "    <tr>\n",
+       "      <th>0</th>\n",
+       "      <td>-1.0</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>1</th>\n",
+       "      <td>1.0</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>2</th>\n",
+       "      <td>-1.0</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>3</th>\n",
+       "      <td>1.0</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>4</th>\n",
+       "      <td>-1.0</td>\n",
+       "    </tr>\n",
+       "  </tbody>\n",
+       "</table>\n",
+       "</div>"
+      ],
+      "text/plain": [
+       "   2-week Forward Excess Return Sign\n",
+       "0                               -1.0\n",
+       "1                                1.0\n",
+       "2                               -1.0\n",
+       "3                                1.0\n",
+       "4                               -1.0"
+      ]
+     },
+     "execution_count": 5,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "y_train.head(5)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 6,
+   "id": "6edfae38",
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2024-05-08T10:51:27.497294Z",
+     "iopub.status.busy": "2024-05-08T10:51:27.496937Z",
+     "iopub.status.idle": "2024-05-08T10:51:27.505056Z",
+     "shell.execute_reply": "2024-05-08T10:51:27.504208Z"
+    },
+    "papermill": {
+     "duration": 0.01715,
+     "end_time": "2024-05-08T10:51:27.506792",
+     "exception": false,
+     "start_time": "2024-05-08T10:51:27.489642",
+     "status": "completed"
+    },
+    "tags": []
+   },
+   "outputs": [
+    {
+     "data": {
+      "text/html": [
+       "<div>\n",
+       "<style scoped>\n",
+       "    .dataframe tbody tr th:only-of-type {\n",
+       "        vertical-align: middle;\n",
+       "    }\n",
+       "\n",
+       "    .dataframe tbody tr th {\n",
+       "        vertical-align: top;\n",
+       "    }\n",
+       "\n",
+       "    .dataframe thead th {\n",
+       "        text-align: right;\n",
+       "    }\n",
+       "</style>\n",
+       "<table border=\"1\" class=\"dataframe\">\n",
+       "  <thead>\n",
+       "    <tr style=\"text-align: right;\">\n",
+       "      <th></th>\n",
+       "      <th>2-week Forward Excess Return Sign</th>\n",
+       "    </tr>\n",
+       "  </thead>\n",
+       "  <tbody>\n",
+       "    <tr>\n",
+       "      <th>0</th>\n",
+       "      <td>-1.0</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>1</th>\n",
+       "      <td>-1.0</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>2</th>\n",
+       "      <td>1.0</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>3</th>\n",
+       "      <td>1.0</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <th>4</th>\n",
+       "      <td>1.0</td>\n",
+       "    </tr>\n",
+       "  </tbody>\n",
+       "</table>\n",
+       "</div>"
+      ],
+      "text/plain": [
+       "   2-week Forward Excess Return Sign\n",
+       "0                               -1.0\n",
+       "1                               -1.0\n",
+       "2                                1.0\n",
+       "3                                1.0\n",
+       "4                                1.0"
+      ]
+     },
+     "execution_count": 6,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "y_test.head(5)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "f59facd7",
+   "metadata": {
+    "papermill": {
+     "duration": 0.0058,
+     "end_time": "2024-05-08T10:51:27.519012",
+     "exception": false,
+     "start_time": "2024-05-08T10:51:27.513212",
+     "status": "completed"
+    },
+    "tags": []
+   },
+   "source": [
+    "# Fit XGBoost Model"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 7,
+   "id": "f949a8ca",
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2024-05-08T10:51:27.534400Z",
+     "iopub.status.busy": "2024-05-08T10:51:27.533209Z",
+     "iopub.status.idle": "2024-05-08T10:51:28.857491Z",
+     "shell.execute_reply": "2024-05-08T10:51:28.856495Z"
+    },
+    "papermill": {
+     "duration": 1.333557,
+     "end_time": "2024-05-08T10:51:28.859604",
+     "exception": false,
+     "start_time": "2024-05-08T10:51:27.526047",
+     "status": "completed"
+    },
+    "tags": []
+   },
+   "outputs": [],
+   "source": [
+    "from xgboost import XGBClassifier"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 8,
+   "id": "8b7ee468",
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2024-05-08T10:51:28.872524Z",
+     "iopub.status.busy": "2024-05-08T10:51:28.872223Z",
+     "iopub.status.idle": "2024-05-08T10:51:28.883205Z",
+     "shell.execute_reply": "2024-05-08T10:51:28.882109Z"
+    },
+    "papermill": {
+     "duration": 0.019788,
+     "end_time": "2024-05-08T10:51:28.885412",
+     "exception": false,
+     "start_time": "2024-05-08T10:51:28.865624",
+     "status": "completed"
+    },
+    "tags": []
+   },
+   "outputs": [],
+   "source": [
+    "# Convert labels (-1 and 1) to 0 and 1 which are required by xgboost\n",
+    "y_train.replace(to_replace=-1, value=0, inplace=True)\n",
+    "y_test.replace(to_replace=-1, value=0, inplace=True)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "0bb605dc",
+   "metadata": {
+    "papermill": {
+     "duration": 0.005501,
+     "end_time": "2024-05-08T10:51:28.896848",
+     "exception": false,
+     "start_time": "2024-05-08T10:51:28.891347",
+     "status": "completed"
+    },
+    "tags": []
+   },
+   "source": [
+    "### Parameter Optimization"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 9,
+   "id": "f99d8fed",
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2024-05-08T10:51:28.911067Z",
+     "iopub.status.busy": "2024-05-08T10:51:28.909895Z",
+     "iopub.status.idle": "2024-05-08T10:51:28.917189Z",
+     "shell.execute_reply": "2024-05-08T10:51:28.916276Z"
+    },
+    "papermill": {
+     "duration": 0.016629,
+     "end_time": "2024-05-08T10:51:28.919139",
+     "exception": false,
+     "start_time": "2024-05-08T10:51:28.902510",
+     "status": "completed"
+    },
+    "tags": []
+   },
+   "outputs": [],
+   "source": [
+    "from sklearn.metrics import accuracy_score\n",
+    "\n",
+    "def objective(trial, X_train, X_val, y_train, y_val):\n",
+    "    \"\"\"Objective function returning accuracy score to be used in hyperparameter tuning\"\"\"\n",
+    "    \n",
+    "    # Parameters to optimize\n",
+    "    params = {\n",
+    "        'objective': 'binary:logistic',\n",
+    "        'max_depth': trial.suggest_int('max_depth', 1, 2)\n",
+    "    }\n",
+    "    \n",
+    "    # Fit model with these parameters\n",
+    "    model = XGBClassifier(**params) \n",
+    "    model.fit(\n",
+    "        X_train,\n",
+    "        y_train,\n",
+    "        eval_set=[(X_val, y_val)],\n",
+    "        verbose=250,\n",
+    "        early_stopping_rounds=250\n",
+    "    )\n",
+    "    \n",
+    "    # Predict\n",
+    "    preds = model.predict(X_val)\n",
+    "    \n",
+    "    # Get accuracy score\n",
+    "    accuracy = accuracy_score(preds, y_val)\n",
+    "    \n",
+    "    return accuracy"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 10,
+   "id": "0c2e7af6",
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2024-05-08T10:51:28.932443Z",
+     "iopub.status.busy": "2024-05-08T10:51:28.932113Z",
+     "iopub.status.idle": "2024-05-08T10:51:54.875716Z",
+     "shell.execute_reply": "2024-05-08T10:51:54.874352Z"
+    },
+    "papermill": {
+     "duration": 25.952878,
+     "end_time": "2024-05-08T10:51:54.878139",
+     "exception": false,
+     "start_time": "2024-05-08T10:51:28.925261",
+     "status": "completed"
+    },
+    "tags": []
+   },
+   "outputs": [
+    {
+     "name": "stderr",
+     "output_type": "stream",
+     "text": [
+      "[I 2024-05-08 10:51:29,239] A new study created in memory with name: no-name-b9683bb8-12f8-4c59-acb3-3e5518989e3e\n",
+      "/opt/conda/lib/python3.10/site-packages/xgboost/sklearn.py:889: UserWarning: `early_stopping_rounds` in `fit` method is deprecated for better compatibility with scikit-learn, use `early_stopping_rounds` in constructor or`set_params` instead.\n",
+      "  warnings.warn(\n"
+     ]
+    },
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "[0]\tvalidation_0-logloss:0.69514\n",
+      "[99]\tvalidation_0-logloss:0.69740\n"
+     ]
+    },
+    {
+     "name": "stderr",
+     "output_type": "stream",
+     "text": [
+      "[I 2024-05-08 10:51:54,870] Trial 0 finished with value: 0.4924981645446502 and parameters: {'max_depth': 1}. Best is trial 0 with value: 0.4924981645446502.\n"
+     ]
+    },
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "Number of finished trials: 1\n",
+      "Best trial: {'max_depth': 1, 'objective': 'binary:logistic'}\n"
+     ]
+    }
+   ],
+   "source": [
+    "# Create study\n",
+    "import optuna\n",
+    "study = optuna.create_study(direction='maximize')\n",
+    "\n",
+    "# Split data into training and validation for hyperparameter tuning\n",
+    "X_train_optuna = X_train.iloc[:600000, :]\n",
+    "X_val_optuna = X_train.iloc[600000:, :]\n",
+    "y_train_optuna = y_train.iloc[:600000]\n",
+    "y_val_optuna = y_train.iloc[600000:]\n",
+    "\n",
+    "# Optimize hyperparameters\n",
+    "study.optimize(\n",
+    "    lambda trial: objective(\n",
+    "        trial, \n",
+    "        X_train=X_train_optuna, \n",
+    "        X_val= X_val_optuna,\n",
+    "        y_train=y_train_optuna,\n",
+    "        y_val=y_val_optuna\n",
+    "    ), \n",
+    "    n_trials=1\n",
+    ")\n",
+    "\n",
+    "# Get best parameters\n",
+    "best_params = study.best_trial.params\n",
+    "\n",
+    "# Add fixed params that aren't stored in optuna's best params object\n",
+    "best_params['objective'] = 'binary:logistic'\n",
+    "\n",
+    "# Print and save best parameters\n",
+    "import pickle\n",
+    "with open('best_params.pkl', 'wb') as f:\n",
+    "    pickle.dump(best_params, f)\n",
+    "print('Number of finished trials:', len(study.trials))\n",
+    "print('Best trial:', best_params)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "35c9f496",
+   "metadata": {
+    "papermill": {
+     "duration": 0.005889,
+     "end_time": "2024-05-08T10:51:54.890662",
+     "exception": false,
+     "start_time": "2024-05-08T10:51:54.884773",
+     "status": "completed"
+    },
+    "tags": []
+   },
+   "source": [
+    "### Train Model"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 11,
+   "id": "1a76b9b6",
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2024-05-08T10:51:54.905252Z",
+     "iopub.status.busy": "2024-05-08T10:51:54.904861Z",
+     "iopub.status.idle": "2024-05-08T10:52:12.536313Z",
+     "shell.execute_reply": "2024-05-08T10:52:12.535449Z"
+    },
+    "papermill": {
+     "duration": 17.640943,
+     "end_time": "2024-05-08T10:52:12.537907",
+     "exception": false,
+     "start_time": "2024-05-08T10:51:54.896964",
+     "status": "completed"
+    },
+    "tags": []
+   },
+   "outputs": [
+    {
+     "data": {
+      "text/html": [
+       "<style>#sk-container-id-1 {color: black;background-color: white;}#sk-container-id-1 pre{padding: 0;}#sk-container-id-1 div.sk-toggleable {background-color: white;}#sk-container-id-1 label.sk-toggleable__label {cursor: pointer;display: block;width: 100%;margin-bottom: 0;padding: 0.3em;box-sizing: border-box;text-align: center;}#sk-container-id-1 label.sk-toggleable__label-arrow:before {content: \"▸\";float: left;margin-right: 0.25em;color: #696969;}#sk-container-id-1 label.sk-toggleable__label-arrow:hover:before {color: black;}#sk-container-id-1 div.sk-estimator:hover label.sk-toggleable__label-arrow:before {color: black;}#sk-container-id-1 div.sk-toggleable__content {max-height: 0;max-width: 0;overflow: hidden;text-align: left;background-color: #f0f8ff;}#sk-container-id-1 div.sk-toggleable__content pre {margin: 0.2em;color: black;border-radius: 0.25em;background-color: #f0f8ff;}#sk-container-id-1 input.sk-toggleable__control:checked~div.sk-toggleable__content {max-height: 200px;max-width: 100%;overflow: auto;}#sk-container-id-1 input.sk-toggleable__control:checked~label.sk-toggleable__label-arrow:before {content: \"▾\";}#sk-container-id-1 div.sk-estimator input.sk-toggleable__control:checked~label.sk-toggleable__label {background-color: #d4ebff;}#sk-container-id-1 div.sk-label input.sk-toggleable__control:checked~label.sk-toggleable__label {background-color: #d4ebff;}#sk-container-id-1 input.sk-hidden--visually {border: 0;clip: rect(1px 1px 1px 1px);clip: rect(1px, 1px, 1px, 1px);height: 1px;margin: -1px;overflow: hidden;padding: 0;position: absolute;width: 1px;}#sk-container-id-1 div.sk-estimator {font-family: monospace;background-color: #f0f8ff;border: 1px dotted black;border-radius: 0.25em;box-sizing: border-box;margin-bottom: 0.5em;}#sk-container-id-1 div.sk-estimator:hover {background-color: #d4ebff;}#sk-container-id-1 div.sk-parallel-item::after {content: \"\";width: 100%;border-bottom: 1px solid gray;flex-grow: 1;}#sk-container-id-1 div.sk-label:hover label.sk-toggleable__label {background-color: #d4ebff;}#sk-container-id-1 div.sk-serial::before {content: \"\";position: absolute;border-left: 1px solid gray;box-sizing: border-box;top: 0;bottom: 0;left: 50%;z-index: 0;}#sk-container-id-1 div.sk-serial {display: flex;flex-direction: column;align-items: center;background-color: white;padding-right: 0.2em;padding-left: 0.2em;position: relative;}#sk-container-id-1 div.sk-item {position: relative;z-index: 1;}#sk-container-id-1 div.sk-parallel {display: flex;align-items: stretch;justify-content: center;background-color: white;position: relative;}#sk-container-id-1 div.sk-item::before, #sk-container-id-1 div.sk-parallel-item::before {content: \"\";position: absolute;border-left: 1px solid gray;box-sizing: border-box;top: 0;bottom: 0;left: 50%;z-index: -1;}#sk-container-id-1 div.sk-parallel-item {display: flex;flex-direction: column;z-index: 1;position: relative;background-color: white;}#sk-container-id-1 div.sk-parallel-item:first-child::after {align-self: flex-end;width: 50%;}#sk-container-id-1 div.sk-parallel-item:last-child::after {align-self: flex-start;width: 50%;}#sk-container-id-1 div.sk-parallel-item:only-child::after {width: 0;}#sk-container-id-1 div.sk-dashed-wrapped {border: 1px dashed gray;margin: 0 0.4em 0.5em 0.4em;box-sizing: border-box;padding-bottom: 0.4em;background-color: white;}#sk-container-id-1 div.sk-label label {font-family: monospace;font-weight: bold;display: inline-block;line-height: 1.2em;}#sk-container-id-1 div.sk-label-container {text-align: center;}#sk-container-id-1 div.sk-container {/* jupyter's `normalize.less` sets `[hidden] { display: none; }` but bootstrap.min.css set `[hidden] { display: none !important; }` so we also need the `!important` here to be able to override the default hidden behavior on the sphinx rendered scikit-learn.org. See: https://github.com/scikit-learn/scikit-learn/issues/21755 */display: inline-block !important;position: relative;}#sk-container-id-1 div.sk-text-repr-fallback {display: none;}</style><div id=\"sk-container-id-1\" class=\"sk-top-container\"><div class=\"sk-text-repr-fallback\"><pre>XGBClassifier(base_score=None, booster=None, callbacks=None,\n",
+       "              colsample_bylevel=None, colsample_bynode=None,\n",
+       "              colsample_bytree=None, device=None, early_stopping_rounds=None,\n",
+       "              enable_categorical=False, eval_metric=None, feature_types=None,\n",
+       "              gamma=None, grow_policy=None, importance_type=None,\n",
+       "              interaction_constraints=None, learning_rate=None, max_bin=None,\n",
+       "              max_cat_threshold=None, max_cat_to_onehot=None,\n",
+       "              max_delta_step=None, max_depth=1, max_leaves=None,\n",
+       "              min_child_weight=None, missing=nan, monotone_constraints=None,\n",
+       "              multi_strategy=None, n_estimators=None, n_jobs=None,\n",
+       "              num_parallel_tree=None, random_state=None, ...)</pre><b>In a Jupyter environment, please rerun this cell to show the HTML representation or trust the notebook. <br />On GitHub, the HTML representation is unable to render, please try loading this page with nbviewer.org.</b></div><div class=\"sk-container\" hidden><div class=\"sk-item\"><div class=\"sk-estimator sk-toggleable\"><input class=\"sk-toggleable__control sk-hidden--visually\" id=\"sk-estimator-id-1\" type=\"checkbox\" checked><label for=\"sk-estimator-id-1\" class=\"sk-toggleable__label sk-toggleable__label-arrow\">XGBClassifier</label><div class=\"sk-toggleable__content\"><pre>XGBClassifier(base_score=None, booster=None, callbacks=None,\n",
+       "              colsample_bylevel=None, colsample_bynode=None,\n",
+       "              colsample_bytree=None, device=None, early_stopping_rounds=None,\n",
+       "              enable_categorical=False, eval_metric=None, feature_types=None,\n",
+       "              gamma=None, grow_policy=None, importance_type=None,\n",
+       "              interaction_constraints=None, learning_rate=None, max_bin=None,\n",
+       "              max_cat_threshold=None, max_cat_to_onehot=None,\n",
+       "              max_delta_step=None, max_depth=1, max_leaves=None,\n",
+       "              min_child_weight=None, missing=nan, monotone_constraints=None,\n",
+       "              multi_strategy=None, n_estimators=None, n_jobs=None,\n",
+       "              num_parallel_tree=None, random_state=None, ...)</pre></div></div></div></div></div>"
+      ],
+      "text/plain": [
+       "XGBClassifier(base_score=None, booster=None, callbacks=None,\n",
+       "              colsample_bylevel=None, colsample_bynode=None,\n",
+       "              colsample_bytree=None, device=None, early_stopping_rounds=None,\n",
+       "              enable_categorical=False, eval_metric=None, feature_types=None,\n",
+       "              gamma=None, grow_policy=None, importance_type=None,\n",
+       "              interaction_constraints=None, learning_rate=None, max_bin=None,\n",
+       "              max_cat_threshold=None, max_cat_to_onehot=None,\n",
+       "              max_delta_step=None, max_depth=1, max_leaves=None,\n",
+       "              min_child_weight=None, missing=nan, monotone_constraints=None,\n",
+       "              multi_strategy=None, n_estimators=None, n_jobs=None,\n",
+       "              num_parallel_tree=None, random_state=None, ...)"
+      ]
+     },
+     "execution_count": 11,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "# Train model with best params\n",
+    "xgb = XGBClassifier(**best_params)\n",
+    "xgb.fit(X_train, y_train)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 12,
+   "id": "0930c9ff",
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2024-05-08T10:52:12.552485Z",
+     "iopub.status.busy": "2024-05-08T10:52:12.552128Z",
+     "iopub.status.idle": "2024-05-08T10:52:12.635095Z",
+     "shell.execute_reply": "2024-05-08T10:52:12.634282Z"
+    },
+    "papermill": {
+     "duration": 0.092735,
+     "end_time": "2024-05-08T10:52:12.637238",
+     "exception": false,
+     "start_time": "2024-05-08T10:52:12.544503",
+     "status": "completed"
+    },
+    "tags": []
+   },
+   "outputs": [],
+   "source": [
+    "# Make predictions on test set\n",
+    "y_pred = xgb.predict(X_test)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 13,
+   "id": "d349418a",
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2024-05-08T10:52:12.653502Z",
+     "iopub.status.busy": "2024-05-08T10:52:12.653120Z",
+     "iopub.status.idle": "2024-05-08T10:52:12.661057Z",
+     "shell.execute_reply": "2024-05-08T10:52:12.660258Z"
+    },
+    "papermill": {
+     "duration": 0.01821,
+     "end_time": "2024-05-08T10:52:12.663174",
+     "exception": false,
+     "start_time": "2024-05-08T10:52:12.644964",
+     "status": "completed"
+    },
+    "tags": []
+   },
+   "outputs": [],
+   "source": [
+    "# Save model\n",
+    "with open('xgb_model.pkl', 'wb') as f:\n",
+    "    pickle.dump(xgb, f)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "712b2387",
+   "metadata": {
+    "papermill": {
+     "duration": 0.006316,
+     "end_time": "2024-05-08T10:52:12.676682",
+     "exception": false,
+     "start_time": "2024-05-08T10:52:12.670366",
+     "status": "completed"
+    },
+    "tags": []
+   },
+   "source": [
+    "# Results Analysis"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 14,
+   "id": "a686ebca",
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2024-05-08T10:52:12.691286Z",
+     "iopub.status.busy": "2024-05-08T10:52:12.690909Z",
+     "iopub.status.idle": "2024-05-08T10:52:12.696373Z",
+     "shell.execute_reply": "2024-05-08T10:52:12.695096Z"
+    },
+    "papermill": {
+     "duration": 0.015001,
+     "end_time": "2024-05-08T10:52:12.698261",
+     "exception": false,
+     "start_time": "2024-05-08T10:52:12.683260",
+     "status": "completed"
+    },
+    "tags": []
+   },
+   "outputs": [],
+   "source": [
+    "# Imports needed for accuracy checks\n",
+    "from sklearn.metrics import confusion_matrix, ConfusionMatrixDisplay, classification_report, accuracy_score, roc_auc_score, roc_curve"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "0e69ceaa",
+   "metadata": {
+    "papermill": {
+     "duration": 0.006198,
+     "end_time": "2024-05-08T10:52:12.711269",
+     "exception": false,
+     "start_time": "2024-05-08T10:52:12.705071",
+     "status": "completed"
+    },
+    "tags": []
+   },
+   "source": [
+    "### Confusion Matrix\n",
+    "The confusion matrix shows us how our predicted labels compare to our actual labels."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 15,
+   "id": "7288e011",
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2024-05-08T10:52:12.726398Z",
+     "iopub.status.busy": "2024-05-08T10:52:12.725553Z",
+     "iopub.status.idle": "2024-05-08T10:52:13.060499Z",
+     "shell.execute_reply": "2024-05-08T10:52:13.059580Z"
+    },
+    "papermill": {
+     "duration": 0.344489,
+     "end_time": "2024-05-08T10:52:13.062265",
+     "exception": false,
+     "start_time": "2024-05-08T10:52:12.717776",
+     "status": "completed"
+    },
+    "tags": []
+   },
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "<sklearn.metrics._plot.confusion_matrix.ConfusionMatrixDisplay at 0x791c6330bf40>"
+      ]
+     },
+     "execution_count": 15,
+     "metadata": {},
+     "output_type": "execute_result"
+    },
+    {
+     "data": {
+      "image/png": "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YeLEiVi2bBm0Wi3c3Nywbds2vPHGG1b39d13360XwCiVyibrKxG1PAYM1G45OzsjMDCw0eUHDRqE7du3w8vLq96v7DqdO3fGDz/8gGHDhgGo/SWdnp6OQYMGNVi+f//+MJlMOHjwIMLCwupdr8twGI1G8VxQUBDs7e2Rm5t7y8xE3759xQmcdb7//nvLN/k7hw8fRkBAAF555RXx3K+//lqvXG5uLvLz8+Hr6yu+j42NDXr37g1vb2/4+vril19+wcSJE616fyJqWzjpkeiGiRMnomPHjhgzZgy+/fZb5OTk4MCBA3jppZdw8eJFAMCcOXOwatUqfPHFF8jMzMTMmTNvu4dC165dERERgcmTJ+OLL74Q29yxYwcAICAgAAqFArt370ZxcTHKy8vh6uqKefPmISoqCps3b0Z2djaOHz+Ot956S5xIOH36dPz888+YP38+srKysHXrViQlJVl1vz179kRubi62bduG7OxsrF+/vsEJnA4ODoiIiMCPP/6Ib7/9Fi+99BKefPJJ+Pj4AACWLVuGlStXYv369fjpp59w6tQpfPDBB3jzzTet6g8RtW4MGIhucHJywqFDh9ClSxeMGzcOffv2xZQpU1BZWSlmHF5++WU899xziIiIgEajgaurKx5//PHbtrthwwY88cQTmDlzJvr06YNp06ahoqICAHDPPfdg2bJlWLhwIby9vTFr1iwAwIoVK7BkyRKsXLkSffv2xSOPPILk5GR069YNQO28gs8++wxffPEFBg4ciI0bN+L111+36n7/8pe/ICoqCrNmzUJwcDAOHz6MJUuW1CsXGBiIcePG4dFHH8WoUaMwYMAAs2WTU6dOxaZNm/DBBx+gf//+ePDBB5GUlCT2lYjaB4Vwq9laRERERDcww0BEREQWMWAgIiIiixgwEBERkUUMGIiIiMgiBgxERERkEQMGIiIisogBAxEREVnEgIGIiIgsYsBAREREFjFgICIiIosYMBAREZFF/w+xwBN/A7uyzgAAAABJRU5ErkJggg==",
+      "text/plain": [
+       "<Figure size 640x480 with 2 Axes>"
+      ]
+     },
+     "metadata": {},
+     "output_type": "display_data"
+    }
+   ],
+   "source": [
+    "# Confusion matrix\n",
+    "cm = confusion_matrix(y_test, y_pred)\n",
+    "disp = ConfusionMatrixDisplay(confusion_matrix=cm, display_labels=xgb.classes_)\n",
+    "disp.plot()"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "01e00040",
+   "metadata": {
+    "papermill": {
+     "duration": 0.006378,
+     "end_time": "2024-05-08T10:52:13.075655",
+     "exception": false,
+     "start_time": "2024-05-08T10:52:13.069277",
+     "status": "completed"
+    },
+    "tags": []
+   },
+   "source": [
+    "### Accuracy, Precision, Recall, F1-Score\n",
+    "* **Accuracy**: Measure of how good the classifier is at predicting correctly. It's simply the number of predictions the classifier got right divided by the total number of predicitions it made. In the confusion, matrix, it's the sum of the leading diagonal divided by the sum of the whole matrix.\n",
+    "\n",
+    "* **Precision**: For a given class, this measures how good the classifier is at not incorrectly labelling something as the class. For the given class, it's simply the number of predictions that were correctly labelled as that class divided by the total number of predictions that were labelled with that class.\n",
+    "\n",
+    "* **Recall**: For a given class, this measures how good the classifier is at correctly labelling something as that class. For the given class, it's simply the number of predictions that were correctly labelled as that class divided by the total number of actual instances of that class.\n",
+    "\n",
+    "* **F1-Score**: For a given class, this is a weighted harmonic mean of precision and recall where each are given equal importance. The best F1-score is 1 and the worst is 0."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 16,
+   "id": "52d10d70",
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2024-05-08T10:52:13.090668Z",
+     "iopub.status.busy": "2024-05-08T10:52:13.090313Z",
+     "iopub.status.idle": "2024-05-08T10:52:13.113139Z",
+     "shell.execute_reply": "2024-05-08T10:52:13.111802Z"
+    },
+    "papermill": {
+     "duration": 0.033638,
+     "end_time": "2024-05-08T10:52:13.115850",
+     "exception": false,
+     "start_time": "2024-05-08T10:52:13.082212",
+     "status": "completed"
+    },
+    "tags": []
+   },
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "Accuracy is 0.49421543078259494\n"
+     ]
+    }
+   ],
+   "source": [
+    "# Accuracy\n",
+    "accuracy = accuracy_score(y_test, y_pred)\n",
+    "print(f\"Accuracy is {accuracy}\")"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 17,
+   "id": "37ef3446",
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2024-05-08T10:52:13.132821Z",
+     "iopub.status.busy": "2024-05-08T10:52:13.132382Z",
+     "iopub.status.idle": "2024-05-08T10:52:13.423065Z",
+     "shell.execute_reply": "2024-05-08T10:52:13.422218Z"
+    },
+    "papermill": {
+     "duration": 0.301431,
+     "end_time": "2024-05-08T10:52:13.424961",
+     "exception": false,
+     "start_time": "2024-05-08T10:52:13.123530",
+     "status": "completed"
+    },
+    "tags": []
+   },
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "              precision    recall  f1-score   support\n",
+      "\n",
+      "         0.0      0.483     0.321     0.385     75130\n",
+      "         1.0      0.500     0.664     0.570     76826\n",
+      "\n",
+      "    accuracy                          0.494    151956\n",
+      "   macro avg      0.491     0.492     0.478    151956\n",
+      "weighted avg      0.491     0.494     0.479    151956\n",
+      "\n"
+     ]
+    }
+   ],
+   "source": [
+    "# Classification report showing precision, recall and F1 score for each class, as well accuracy and some averages\n",
+    "cr = classification_report(y_test, y_pred, digits=3)\n",
+    "print(cr)"
+   ]
+  }
+ ],
+ "metadata": {
+  "kaggle": {
+   "accelerator": "none",
+   "dataSources": [
+    {
+     "sourceId": 174900197,
+     "sourceType": "kernelVersion"
+    }
+   ],
+   "dockerImageVersionId": 30698,
+   "isGpuEnabled": false,
+   "isInternetEnabled": true,
+   "language": "python",
+   "sourceType": "notebook"
+  },
+  "kernelspec": {
+   "display_name": "Python 3",
+   "language": "python",
+   "name": "python3"
+  },
+  "language_info": {
+   "codemirror_mode": {
+    "name": "ipython",
+    "version": 3
+   },
+   "file_extension": ".py",
+   "mimetype": "text/x-python",
+   "name": "python",
+   "nbconvert_exporter": "python",
+   "pygments_lexer": "ipython3",
+   "version": "3.10.13"
+  },
+  "papermill": {
+   "default_parameters": {},
+   "duration": 83.806826,
+   "end_time": "2024-05-08T10:52:14.053508",
+   "environment_variables": {},
+   "exception": null,
+   "input_path": "__notebook__.ipynb",
+   "output_path": "__notebook__.ipynb",
+   "parameters": {},
+   "start_time": "2024-05-08T10:50:50.246682",
+   "version": "2.5.0"
+  }
+ },
+ "nbformat": 4,
+ "nbformat_minor": 5
+}
