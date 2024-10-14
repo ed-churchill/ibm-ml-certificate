@@ -17,7 +17,7 @@ that performs best and compare it to the Risk-Parity and Minimum-Variance method
 - `ibm-unsupervised-learning-writeup.pdf`: Formal writeup with theory and results
 - `ibm-unsupervised-learning-presentation.pptx`: Powerpoint presentation for colleagues at M&G Investments
 - `ibm-unsupervised-learning-get-data.ipynb`: Code to fetch data
-- `ibm-unsupervised-learning-eda-and-data-cleaning.ipynb`: Code to explore and cleam data
+- `ibm-unsupervised-learning-eda-and-data-cleaning.ipynb`: Code to explore and clean data
 - `ibm-unsupervised-learning-hrp.ipynb`: Code to implement HRP
 - `ibm-unsupervised-learning-risk-parity.ipynb`: Code to implement Risk-Parity
 - `ibm-unsupervised-learning-minimum-variance.ipynb`: Code to implement Minimum-Variance
